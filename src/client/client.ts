@@ -66,8 +66,10 @@
 export class main {};
 
 import * as yargs from 'yargs';
-import {TypeColor} from './Note';
-import {UserNotes} from './UserNotes';
+const chalk = require("chalk");
+import {connect} from 'net';
+
+const client = connect({port: 60300});
 
 yargs.command({
   command: 'add',
@@ -97,10 +99,8 @@ yargs.command({
   handler(argv) {
     if (typeof argv.title === 'string' && typeof argv.body === 'string' 
         && typeof argv.color === 'string' && typeof argv.user === 'string') {
-      let User: UserNotes = new UserNotes(argv.user);
-      let Color: TypeColor = colorGetter(argv.color);
-      if(User.addNewNote(argv.title, argv.body, Color))
-        User.updateUser();
+      client.write(JSON.stringify({'type': 'add', 'user': argv.user, 'title': argv.title, 'body': argv.body, 'color': argv.color}));
+      client.end();
     }
   },
 });
@@ -123,9 +123,8 @@ yargs.command({
   },
   handler(argv) {
     if (typeof argv.title === 'string' && typeof argv.user === 'string') {
-      let User: UserNotes = new UserNotes(argv.user);
-      if(User.removeNote(argv.title))
-        User.updateUser();
+      client.write(JSON.stringify({'type': 'remove', 'user': argv.user, 'title': argv.title}));
+      client.end();
     }
   },
 });
@@ -152,9 +151,8 @@ yargs.command({
   },
   handler(argv) {
     if (typeof argv.title === 'string' && typeof argv.user === 'string' && typeof argv.body === 'string') {
-      let User: UserNotes = new UserNotes(argv.user);
-      if(User.modifyNote(argv.body, argv.title))
-        User.updateUser();
+      client.write(JSON.stringify({'type': 'modify', 'user': argv.user, 'title': argv.title, 'body': argv.body}));
+      client.end();
     }
   },
 });
@@ -177,8 +175,8 @@ yargs.command({
   },
   handler(argv) {
     if (typeof argv.title === 'string' && typeof argv.user === 'string') {
-      let User: UserNotes = new UserNotes(argv.user);
-      User.readNote(argv.title);
+      client.write(JSON.stringify({'type': 'read', 'user': argv.user, 'title': argv.title}));
+      client.end();
     }
   },
 });
@@ -195,33 +193,24 @@ yargs.command({
   },
   handler(argv) {
     if (typeof argv.user === 'string') {
-      let User: UserNotes = new UserNotes(argv.user);
-      User.listTitles();
+      client.write(JSON.stringify({'type': 'add', 'user': argv.user}));
+      client.end();
     }
   },
 });
 
 yargs.parse();
 
+let wholeData = '';
+client.on('data', (chunks) => {
+  wholeData += chunks;
+})
 
-function colorGetter(color: string): TypeColor {
-  let color_: TypeColor = "Blue"
-  switch (color) {
-    case "Blue":
-      color_ = "Blue";
-      break;
-    case "Red":
-      color_ = "Red";
-      break;
-    case "Tellow":
-      color_ = "Yellow";
-      break;
-    case "Green":
-      color_ = "Green";
-      break;
-    default:
-      console.log("Color no valido, asigando azul como predeterminado");
-      break;
+client.on('end', () => {
+  const info_from_server = JSON.parse(wholeData.toString());
+
+  switch (info_from_server.type) {
+    case 'add':
+      console.log(chalk.keyboard(info_from_server.color)(info_from_server.content));
   }
-  return color_;
-}
+});
