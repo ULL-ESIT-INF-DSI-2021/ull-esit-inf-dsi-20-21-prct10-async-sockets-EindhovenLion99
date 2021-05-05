@@ -1,6 +1,6 @@
 import chalk from "chalk";
 
-export type TypeColor = "Red" | "Green" | "Blue" | "Yellow";
+export type TypeColor = "red" | "green" | "blue" | "yellow";
 
 /**
  * # Class Note
@@ -97,16 +97,16 @@ export class Note {
 
   printTitle() {
     switch (this.Color) {
-      case "Red":
+      case "red":
         console.log(chalk.red(this.Title));
         break;
-      case "Blue":
+      case "blue":
         console.log(chalk.blue(this.Title));
         break;
-      case "Green":
+      case "green":
         console.log(chalk.green(this.Title));
         break;
-      case "Yellow":
+      case "yellow":
         console.log(chalk.yellow(this.Title));
         break;
     } 
@@ -114,16 +114,16 @@ export class Note {
 
   printBody() {
     switch (this.Color) {
-      case "Red":
+      case "red":
         console.log(chalk.red(this.Body));
         break;
-      case "Blue":
+      case "blue":
         console.log(chalk.blue(this.Body));
         break;
-      case "Green":
+      case "green":
         console.log(chalk.green(this.Body));
         break;
-      case "Yellow":
+      case "yellow":
         console.log(chalk.yellow(this.Body));
         break;
     } 

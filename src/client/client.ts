@@ -193,7 +193,7 @@ yargs.command({
   },
   handler(argv) {
     if (typeof argv.user === 'string') {
-      client.write(JSON.stringify({'type': 'add', 'user': argv.user}));
+      client.write(JSON.stringify({'type': 'list', 'user': argv.user}));
       client.end();
     }
   },
@@ -207,10 +207,29 @@ client.on('data', (chunks) => {
 })
 
 client.on('end', () => {
-  const info_from_server = JSON.parse(wholeData.toString());
+  const info_from_server = JSON.parse(wholeData);
 
   switch (info_from_server.type) {
     case 'add':
-      console.log(chalk.keyboard(info_from_server.color)(info_from_server.content));
+      console.log(chalk.keyword(info_from_server.color)(info_from_server.content));
+      break;
+    case 'modify':
+      console.log(chalk.keyword(info_from_server.color)(info_from_server.content));
+      break;
+    case 'remove':
+      console.log(chalk.keyword(info_from_server.color)(info_from_server.content));
+      break;
+    case 'list':
+      const notas = JSON.parse(info_from_server.content);
+      notas.forEach((nota: any) => {
+        console.log("Titulo: " + chalk.keyword(nota.Color)(nota.Title));
+      });
+      break;
+    case 'read':
+      const nota = JSON.parse(info_from_server.content);
+      console.log(nota);
+      console.log("Titulo: " + chalk.keyword(nota.Color)(nota.Title));
+      console.log("Body: " + chalk.keyword(nota.Color)(nota.Body));
+      break;
   }
 });

@@ -73,14 +73,14 @@ export class DBHandler {
   private db: any;
   private filename: string = "";
   constructor(UserName: string, Notes: Note[] = []) {
-    if (fs.readdirSync("./src/database").length === 0) {
+    if (fs.readdirSync("./src/server/database").length === 0) {
       this.filename = UserName + ".json"; 
       const touch = spawn('touch', [this.filename]);
-      const adapter = new FileSync(`./src/database/${this.filename}`);
+      const adapter = new FileSync(`./src/server/database/${this.filename}`);
       this.db = low(adapter);
     } else {
       this.filename = UserName + ".json";
-      const adapter = new FileSync(`./src/database/${this.filename}`);
+      const adapter = new FileSync(`./src/server/database/${this.filename}`);
       this.db = low(adapter);
     }
     if (!this.db.get('User').find({ name: UserName}).value()) {

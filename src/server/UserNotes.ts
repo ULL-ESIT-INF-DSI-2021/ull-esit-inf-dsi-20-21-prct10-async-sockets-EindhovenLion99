@@ -145,7 +145,7 @@ export class UserNotes {
 
   existNote(Title: string): [boolean, Note] {
     let found: boolean = false;
-    let foundNote: Note = new Note("-", "-", "Red");
+    let foundNote: Note = new Note("-", "-", "red");
     this.Notes.forEach(note => {
       if (note.getTitle() === Title) {
         found = true;
@@ -172,5 +172,14 @@ export class UserNotes {
     } else {
       console.log(chalk.red.bold("No existe ninguna nota con ese titulo"));
     }
+  }
+
+  getNote(Title: string): [boolean, Note] {
+    let check: [boolean, Note] = this.existNote(Title);
+    return check;
+  }
+
+  getNotes(): Note[] {
+    return this.Notes;
   }
 }
