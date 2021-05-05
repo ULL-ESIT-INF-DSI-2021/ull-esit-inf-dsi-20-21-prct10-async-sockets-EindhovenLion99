@@ -1,12 +1,12 @@
 import 'mocha';
 import {expect} from 'chai';
-import {Note} from '../src/Note';
+import {Note} from '../src/server/Note';
 
 describe('Class Note', () => {
 
   // Note -> Primera Nota
 
-  let Note1 = new Note("Primera Nota", "Esta es una nota de prueba", "Blue");
+  let Note1 = new Note("Primera Nota", "Esta es una nota de prueba", "blue");
 
   it("Create new Object Note" , () => {
       expect(Note1 instanceof Note).to.eql(true);
@@ -37,7 +37,7 @@ describe('Class Note', () => {
   });
 
   it("Modified Note Color" , () => {
-      Note1.setColor("Green");
+      Note1.setColor("green");
       expect(Note1.getColor()).to.eql("Green");
   });
 

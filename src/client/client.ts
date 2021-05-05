@@ -63,13 +63,61 @@
  * @function colorGetter() Se encarga de transformar el color recibido por argumentos de tipo string a tipo TypeColor, necesaria para el obejeto Note
  */
 
-export class main {};
+export class client_ {};
 
 import * as yargs from 'yargs';
 const chalk = require("chalk");
 import {connect} from 'net';
+import EventEmitter from 'node:events';
 
-const client = connect({port: 60300});
+/*
+export class Client extends EventEmitter {
+  constructor(connection: EventEmitter) {
+    super();
+
+    // Datos que recibe el cliente del servidor
+    let wholeData = '';
+    connection.on('data', (chunks) => {
+      wholeData += chunks;
+    })
+
+    // Lo que recive el cliente del servidor cuando este acaba la conexion
+    connection.on('end', () => {
+      const info_from_server = JSON.parse(wholeData);
+
+      switch (info_from_server.type) {
+        case 'add':
+          console.log(chalk.keyword(info_from_server.color)(info_from_server.content));
+          break;
+        case 'modify':
+          console.log(chalk.keyword(info_from_server.color)(info_from_server.content));
+          break;
+        case 'remove':
+          console.log(chalk.keyword(info_from_server.color)(info_from_server.content));
+          break;
+        case 'list':
+          const notas = JSON.parse(info_from_server.content);
+          notas.forEach((nota: any) => {
+            console.log("Titulo: " + chalk.keyword(nota.Color)(nota.Title));
+          });
+          break;
+        case 'read':
+          const nota = JSON.parse(info_from_server.content);
+          console.log(nota);
+          console.log("Titulo: " + chalk.keyword(nota.Color)(nota.Title));
+          console.log("Body: " + chalk.keyword(nota.Color)(nota.Body));
+          break;
+      }
+    });
+  }
+}
+
+const cliente = new Client(connect({port: 60300}));
+*/
+
+
+export const client = connect({port: 60300});
+
 
 yargs.command({
   command: 'add',
@@ -99,8 +147,9 @@ yargs.command({
   handler(argv) {
     if (typeof argv.title === 'string' && typeof argv.body === 'string' 
         && typeof argv.color === 'string' && typeof argv.user === 'string') {
-      client.write(JSON.stringify({'type': 'add', 'user': argv.user, 'title': argv.title, 'body': argv.body, 'color': argv.color}));
-      client.end();
+      client.write((JSON.stringify({'type': 'add', 'user': argv.user, 'title': argv.title, 'body': argv.body, 'color': argv.color}) + '\n'), (error) => {
+        if (error) console.error(error);
+      });
     }
   },
 });
@@ -123,8 +172,9 @@ yargs.command({
   },
   handler(argv) {
     if (typeof argv.title === 'string' && typeof argv.user === 'string') {
-      client.write(JSON.stringify({'type': 'remove', 'user': argv.user, 'title': argv.title}));
-      client.end();
+      client.write((JSON.stringify({'type': 'remove', 'user': argv.user, 'title': argv.title}) + '\n'), (error) => {
+        if (error) console.error(error);
+      });
     }
   },
 });
@@ -151,8 +201,9 @@ yargs.command({
   },
   handler(argv) {
     if (typeof argv.title === 'string' && typeof argv.user === 'string' && typeof argv.body === 'string') {
-      client.write(JSON.stringify({'type': 'modify', 'user': argv.user, 'title': argv.title, 'body': argv.body}));
-      client.end();
+      client.write((JSON.stringify({'type': 'modify', 'user': argv.user, 'title': argv.title, 'body': argv.body}) + '\n'), (error) => {
+        if (error) console.error(error);
+      });
     }
   },
 });
@@ -175,8 +226,9 @@ yargs.command({
   },
   handler(argv) {
     if (typeof argv.title === 'string' && typeof argv.user === 'string') {
-      client.write(JSON.stringify({'type': 'read', 'user': argv.user, 'title': argv.title}));
-      client.end();
+      client.write((JSON.stringify({'type': 'read', 'user': argv.user, 'title': argv.title}) + '\n'), (error) => {
+        if (error) console.error(error);
+      });
     }
   },
 });
@@ -193,20 +245,24 @@ yargs.command({
   },
   handler(argv) {
     if (typeof argv.user === 'string') {
-      client.write(JSON.stringify({'type': 'list', 'user': argv.user}));
-      client.end();
+      client.write((JSON.stringify({'type': 'list', 'user': argv.user}) + '\n'), (error) => {
+        if (error) console.error(error);
+      });
     }
   },
 });
 
 yargs.parse();
 
+// Datos que recibe el cliente del servidor
 let wholeData = '';
 client.on('data', (chunks) => {
   wholeData += chunks;
 })
 
+// Lo que recive el cliente del servidor cuando este acaba la conexion
 client.on('end', () => {
+  console.log(wholeData);
   const info_from_server = JSON.parse(wholeData);
 
   switch (info_from_server.type) {

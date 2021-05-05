@@ -1,6 +1,6 @@
 import 'mocha';
 import {expect} from 'chai';
-import {UserNotes} from '../src/UserNotes';
+import {UserNotes} from '../src/server/UserNotes';
 
 describe('Class UserNotes', () => {
 
@@ -13,11 +13,11 @@ describe('Class UserNotes', () => {
   });
 
   it("Adding New Note to Usuario1" , () => {
-      expect(Usuario1.addNewNote("Titulo", "Cuerpo", "Green")).to.eql(true);
+      expect(Usuario1.addNewNote("Titulo", "Cuerpo", "green")).to.eql(true);
   });
 
   it("Adding New Note to Usuario1 that already exists" , () => {
-    expect(Usuario1.addNewNote("Titulo", "Cuerpo", "Green")).to.eql(false);
+    expect(Usuario1.addNewNote("Titulo", "Cuerpo", "green")).to.eql(false);
   });
 
   it("Removing Previus Note from Usuario1" , () => {
@@ -25,7 +25,7 @@ describe('Class UserNotes', () => {
   });
 
   it("Adding New Note to Usuario1" , () => {
-    expect(Usuario1.addNewNote("Titulo2", "Cuerpo2", "Green")).to.eql(true);
+    expect(Usuario1.addNewNote("Titulo2", "Cuerpo2", "green")).to.eql(true);
   });
 
   it("Modifying Note from Usuario1" , () => {
