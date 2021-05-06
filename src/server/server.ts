@@ -3,6 +3,69 @@ import * as net from 'net';
 import { UserNotes } from './UserNotes';
 const chalk = require("chalk");
 
+/**
+ * Fichero server
+ * 
+ * Se encarga de recibir las peticiones del cliente, añadir, modificar, remover o mostrar las notas.
+ * Para poder establecer una conexion, usamos la funcion ```createServer() ```, cuando se establece dicha conexion se imprime por pantalla que se ha conectado el cliente
+ * asi como se imprime si se ha desconectado, gracias a la funcion ```connection.on('close');```
+ * 
+ * ```ts
+ * const id: number = Math.floor(Math.random() * 1000);
+ * console.log(chalk.green("Se ha conectado un cliente con id: " + id));
+ * connection.on('close', () => {
+ *   console.log(chalk.red("Se ha desconectado el cliente " + id));
+ * })
+ * ```
+ * 
+ * Una vez se conecta el cliente, guardamos la peticion que nos hace en la variable ```wholeData```:
+ * 
+ * ```ts
+ * let wholeData = "";
+ * connection.on('data', (chunks) => {
+ *   wholeData += chunks;
+ *   if (wholeData.indexOf('\n') !== -1) {
+ *     connection.emit('event', wholeData)
+ *   }
+ *   console.log(wholeData);
+ * })
+ * ```
+ * 
+ * Lo que recibe se lo emitimos al ```event```, este manejara los datos.
+ * 
+ * ```ts
+ * connection.on('event', (Data) => {
+ *   const info = JSON.parse(Data);
+ *   let User: UserNotes = new UserNotes(info.user);
+ *   switch (info.type) {
+ *     case 'add':
+ *       let Color: TypeColor = colorGetter(info.color);
+ *       if (User.addNewNote(info.title, info.body, Color)) {
+ *         User.updateUser();
+ *         connection.write((JSON.stringify({'type': 'add', 'content': 'Nueva nota añadida!', 'color': 'green'})), (error) => {
+ *           if (error) {
+ *             console.error(error);
+ *           } else {
+ *             connection.end();
+ *           }
+ *         });
+ *       } else {
+ *         connection.write((JSON.stringify({'type': 'add', 'content': 'La nota ya existe!', 'color': 'red'})), (error) => {
+ *           if (error) {
+ *             console.error(error);
+ *           } else {
+ *             connection.end();
+ *           }
+ *         });
+ *       }
+ *       break;
+ * ```
+ * 
+ * Si al servidor le llega una peticion de tipo add primero comprueba que se añade la nota y no se producen errores, en caso contrario, avisa al cliente de que la nota ya existe. Luego acaba la conexion.
+ * 
+ *  @function colorGetter() Se encarga de transformar el color recibido por argumentos de tipo string a tipo TypeColor, necesaria para el obejeto Note
+ */
+
 export class server_ {}
 
 export const server = net.createServer(connection => {
@@ -40,7 +103,7 @@ export const server = net.createServer(connection => {
             }
           });
         } else {
-          connection.write(JSON.stringify(({'type': 'add', 'content': 'La nota ya existe!', 'color': 'red'})), (error) => {
+          connection.write((JSON.stringify({'type': 'add', 'content': 'La nota ya existe!', 'color': 'red'})), (error) => {
             if (error) {
               console.error(error);
             } else {
